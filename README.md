@@ -3,18 +3,19 @@
 A tool for event planners to parse hotel quote emails and extract key financial data. Built for the Nowadays take-home assessment.
 
 **Live demo:** https://nowadays-take-home.vercel.app
-> Note: PDF uploads require `poppler` installed locally. The deployed version supports HTML paste, text paste, and XLSX uploads.
+> Note: PDF uploads and link following (Playwright) require local dependencies. The deployed version supports HTML paste, text paste, and XLSX uploads.
 
 ## Features
 
 - **Paste or upload** hotel quote emails (HTML, plain text, PDF, XLSX)
 - **AI-powered extraction** using Claude API with structured output
 - **Claude Vision** for PDFs — sends both extracted text and page images for maximum accuracy
+- **LLM-guided link following** — identifies proposal URLs in emails, launches a headless browser (Playwright) to render JS-heavy portals (Marriott, Kimpton, etc.), and extracts the proposal content as additional context
 - **4 required data points**: Total Quote, Guestroom Total, Meeting Room Total, Food & Beverage Total
 - **Source references** — click any total or line item to see the exact text it was extracted from
 - **Smart qualifiers** — shows "min" badge for minimums, never shows N/A when data exists
 - **Enhanced analysis** (toggle) — warnings, contract terms, cancellation schedules, all-in estimates
-- **Quote history** — all parsed quotes saved to Supabase with full detail view
+- **Quote history** — all parsed quotes saved to Supabase with full detail view and delete
 - **Nowadays-styled UI** — Satoshi font, clean cards, smooth animations
 
 ## Tech Stack
@@ -23,6 +24,7 @@ A tool for event planners to parse hotel quote emails and extract key financial 
 - **Database**: PostgreSQL on Supabase
 - **AI**: Anthropic Claude API (Sonnet 4.5) with Vision
 - **File Processing**: poppler (pdftotext/pdftoppm), html-to-text, SheetJS (xlsx)
+- **Link Following**: Playwright (headless Chromium) for JS-rendered hotel proposal portals
 
 ## Setup
 
@@ -40,6 +42,7 @@ A tool for event planners to parse hotel quote emails and extract key financial 
 git clone https://github.com/anishfish2/nowadays-take-home.git
 cd nowadays-take-home
 npm install
+npx playwright install chromium
 ```
 
 ### Environment Variables
@@ -106,7 +109,7 @@ src/
   app/
     page.tsx              # Main parser page
     quotes/page.tsx       # Quote history page
-    api/parse/route.ts    # Parse endpoint (file processing + Claude API)
+    api/parse/route.ts    # Parse endpoint (file processing + Claude API + link following)
     api/quotes/           # Quotes CRUD endpoints
   components/
     header.tsx            # Nav header with Nowadays branding
@@ -119,6 +122,7 @@ src/
     claude.ts             # Claude API integration + Zod schema
     prompts.ts            # System prompt for extraction
     file-processors.ts    # HTML/PDF/XLSX text extraction
+    link-follower.ts      # LLM-guided URL identification + Playwright fetching
     supabase.ts           # Supabase client
     utils.ts              # Utilities
   types/
