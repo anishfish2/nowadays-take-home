@@ -28,7 +28,7 @@ function normalizeCategory(
 const LineItemSchema = z.object({
   category: z.string().transform(normalizeCategory),
   description: z.string(),
-  amount: z.number(),
+  amount: z.number().nullish().default(0).transform((v) => v ?? 0),
   confidence: z.number().min(0).max(1).optional().default(0.5),
   waived: z.boolean().optional().default(false),
   unit_rate: z.number().nullish().default(null),
@@ -38,8 +38,18 @@ const LineItemSchema = z.object({
   source_page: z.number().nullish().default(null),
 });
 
+function normalizeQualifier(val: string | null | undefined): "minimum" | "estimated" | "approximate" | "tbd" | null {
+  if (!val) return null;
+  const lower = val.toLowerCase();
+  if (lower.includes("min")) return "minimum";
+  if (lower.includes("est") || lower.includes("calc")) return "estimated";
+  if (lower.includes("approx")) return "approximate";
+  if (lower.includes("tbd") || lower.includes("pending")) return "tbd";
+  return "estimated"; // fallback for any other non-null qualifier
+}
+
 const TotalQualifierSchema = z.object({
-  qualifier: z.enum(["minimum", "estimated", "approximate", "tbd"]).nullish().default(null),
+  qualifier: z.string().nullish().default(null).transform(normalizeQualifier),
   source_text: z.string().nullish().default(null),
   source_page: z.number().nullish().default(null),
 });
@@ -224,6 +234,17 @@ function extractJsonFromResponse(
     for (const w of parsed.warnings) {
       if (w.details && typeof w.details === "object") {
         w.details = JSON.stringify(w.details);
+      }
+    }
+  }
+
+  // Coerce total_qualifiers: LLM sometimes returns strings instead of objects
+  if (parsed.total_qualifiers && typeof parsed.total_qualifiers === "object") {
+    for (const key of Object.keys(parsed.total_qualifiers)) {
+      const val = parsed.total_qualifiers[key];
+      if (typeof val === "string") {
+        // Convert string qualifier like "minimum" to proper object
+        parsed.total_qualifiers[key] = { qualifier: val, source_text: null, source_page: null };
       }
     }
   }
