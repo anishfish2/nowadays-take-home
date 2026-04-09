@@ -9,52 +9,88 @@
 
 ---
 
-## Session 1 - Initial Planning (Apr 8, 2026)
+## Session 1 - Planning & Initial Build (Apr 8, 2026)
 
-### Conversation Summary
-1. Received assignment brief from Nowadays
-2. Created SYSTEM_DESIGN.md and DEV_LOG.md
-3. Beginning system design planning phase
+### Planning Phase
+1. Received assignment brief — hotel quote parser with React/Tailwind/Supabase
+2. Created SYSTEM_DESIGN.md and DEV_LOG.md for tracking
+3. Entered planning mode — designed full system architecture
+4. Analyzed all 3 sample emails:
+   - Sample 1 (Kimpton Monaco SLC): Structured table, clear financial data in email
+   - Sample 2 (Renaissance Chicago): Minimal data in email, relies on external proposal link/PDF
+   - Sample 3 (Westin Peachtree Atlanta): Rate in body, detailed 9MB PDF attachment
+5. Key decision: **LLM-based parsing with Claude API** — most robust for varied formats
 
-### Decisions Made
-- Will use Next.js as the React framework
-- Will use Tailwind CSS for styling
-- Will use Supabase (PostgreSQL) for database
-- Goal: go above and beyond with extra features and polish
+### Design Decisions
+- **Parsing approach**: Pure LLM (Claude API) with structured output via Zod schema
+  - *Why*: Hotel emails vary wildly. Regex would need hundreds of fragile rules and fail on every new format. Claude handles natural language variation natively.
+  - *Trade-off*: API cost per parse (~$0.01), but accuracy far exceeds any heuristic approach
+- **PDF pipeline**: Always send BOTH extracted text AND page images to Claude Vision
+  - *Why*: pdf-parse might miss data in tables/images; Claude Vision catches layout. Belt and suspenders.
+  - *Rejected*: JS-based OCR (tesseract.js) — Claude Vision is already doing OCR+comprehension in one step, adding tesseract is redundant
+- **UI style**: Match Nowadays brand aesthetic (Satoshi font, lavender accent, clean cards)
+- **Scope**: Core parsing + display first, stretch goals deferred
+- **Link following**: Deferred as stretch goal — provided samples have PDF versions already
 
-### Open Questions
-- What email sample formats are provided?
-- Parsing approach: AI/LLM vs regex/heuristic vs hybrid?
-- What "above and beyond" features to prioritize?
+### Implementation Phase
+6. Scaffolded Next.js project with TypeScript, Tailwind, App Router
+7. Installed shadcn/ui + all components (card, tabs, textarea, skeleton, badge, sonner)
+8. Installed deps: @anthropic-ai/sdk, @supabase/supabase-js, react-dropzone, pdf-parse, html-to-text, lucide-react, zod
+9. Installed poppler (brew) for PDF page rendering
+10. Built backend:
+    - `src/types/index.ts` — TypeScript types
+    - `src/lib/prompts.ts` — System prompt for hotel quote extraction
+    - `src/lib/claude.ts` — Claude API integration with Zod schema validation
+    - `src/lib/file-processors.ts` — HTML-to-text, PDF text extraction, PDF-to-images
+    - `src/lib/supabase.ts` — Supabase client (graceful degradation if not configured)
+    - `src/app/api/parse/route.ts` — Main parse endpoint
+11. Built frontend:
+    - `src/components/header.tsx` — Clean header with Nowadays-style branding
+    - `src/components/quote-input.tsx` — Tabs for paste (HTML/text) + file upload
+    - `src/components/file-dropzone.tsx` — Drag-and-drop with react-dropzone
+    - `src/components/loading-state.tsx` — "Analyzing quote..." sparkle animation
+    - `src/components/quote-results.tsx` — Totals grid, line items, confidence badges, notes
+    - `src/app/page.tsx` — Main page composing all components
+
+### Current Status
+- [x] Project scaffolded and building
+- [x] Backend parsing engine complete (text + PDF Vision)
+- [x] Frontend UI complete
+- [ ] Supabase table creation (need anon key)
+- [ ] End-to-end testing with samples
+- [ ] Polish and animations
+- [ ] Deployment
 
 ---
 
 ## Implementation Progress
-_Will be updated as work progresses_
 
 ### Phase 1: Planning & Design
 - [x] Create SYSTEM_DESIGN.md
 - [x] Create DEV_LOG.md
-- [ ] Complete system design
-- [ ] Review and finalize design
+- [x] Complete system design
+- [x] Review and finalize design
 
 ### Phase 2: Project Setup
-- [ ] Initialize Next.js project
-- [ ] Configure Tailwind
-- [ ] Set up Supabase
-- [ ] Set up project structure
+- [x] Initialize Next.js project
+- [x] Configure Tailwind + shadcn/ui
+- [x] Set up Supabase client (pending anon key)
+- [x] Set up project structure
 
 ### Phase 3: Core Implementation
-- [ ] Build email input UI (paste + upload)
-- [ ] Implement parsing engine
-- [ ] Build results display
-- [ ] Database integration
+- [x] Build email input UI (paste + upload)
+- [x] Implement parsing engine (Claude API + Vision)
+- [x] Build results display
+- [ ] Database integration (pending Supabase setup)
 
-### Phase 4: Above & Beyond
-- [ ] TBD features
+### Phase 4: Stretch Goals
+- [ ] Link following
+- [ ] Quote history dashboard
+- [ ] Comparison view
+- [ ] CSV export
 
 ### Phase 5: Polish & Deploy
-- [ ] Testing
+- [ ] End-to-end testing with all 3 samples
 - [ ] UI polish
-- [ ] Deployment
+- [ ] Deployment to Vercel
 - [ ] Written response
