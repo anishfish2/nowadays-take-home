@@ -61,7 +61,7 @@ export default function Home() {
       <main className="flex-1">
         <div className="max-w-3xl mx-auto px-6 py-10">
           {/* Hero section */}
-          <div className="text-center mb-10">
+          <div className="text-center mb-10 pt-2">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border/60 bg-white text-sm text-muted-foreground mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               AI-Powered Extraction

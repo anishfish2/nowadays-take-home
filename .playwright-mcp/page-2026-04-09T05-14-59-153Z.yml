@@ -1,0 +1,40 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e9]:
+        - heading "Quote Parser" [level=1] [ref=e10]
+        - paragraph [ref=e11]: by Nowadays
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]: AI-Powered Extraction
+        - heading "Hotel Quote Parser" [level=2] [ref=e17]
+        - paragraph [ref=e18]: Paste an email or upload a document to instantly extract pricing details from hotel quotes.
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - tablist [ref=e22]:
+            - tab "Paste Content" [selected] [ref=e23]:
+              - img
+              - text: Paste Content
+            - tab "Upload File" [ref=e24]:
+              - img
+              - text: Upload File
+          - tabpanel "Paste Content" [ref=e32]:
+            - generic [ref=e26]:
+              - generic [ref=e27]: "Format:"
+              - generic [ref=e28]:
+                - button "HTML" [ref=e29]
+                - button "Plain Text" [ref=e30]
+            - textbox "Paste the hotel quote email HTML here..." [disabled] [ref=e31]: "Hotel Monaco Salt Lake City. Rate: $192/night. 120 rooms per night for 2 nights = 240 total rooms. Meeting room waived with F&B minimum of $20,000. Tax 8.45% and 24% Service Charge. Contact: Jayne Watson, Jayne.Watson@hotelmonaco.com. Dates: 1/22/2026 - 1/24/2026."
+        - button "Parse Quote" [disabled]:
+          - img
+          - text: Parse Quote
+      - generic [ref=e45]:
+        - img [ref=e48]
+        - paragraph [ref=e52]: Analyzing quote...
+        - paragraph [ref=e53]: Extracting financial data from your document
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e38] [cursor=pointer]:
+    - img [ref=e39]
+  - alert [ref=e42]
