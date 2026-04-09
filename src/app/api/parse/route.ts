@@ -8,6 +8,7 @@ import {
   getSourceTypeFromFilename,
 } from "@/lib/file-processors";
 import { supabase } from "@/lib/supabase";
+import { followLinks } from "@/lib/link-follower";
 import type { ParsedQuote } from "@/types";
 
 export const maxDuration = 60;
@@ -70,8 +71,9 @@ export async function POST(req: Request) {
         const html = buffer.toString("utf-8");
         const text = htmlToText(html);
         rawInput = html;
+        const linkedContent = await followLinks(html);
         parsed = await parseQuoteWithText(
-          `Original HTML:\n${html}\n\nExtracted text:\n${text}`
+          `Original HTML:\n${html}\n\nExtracted text:\n${text}${linkedContent}`
         );
       } else {
         rawInput = buffer.toString("utf-8");
@@ -83,12 +85,14 @@ export async function POST(req: Request) {
       if (inputType === "html") {
         sourceType = "paste_html";
         const text = htmlToText(pastedContent!);
+        const linkedContent = await followLinks(pastedContent!);
         parsed = await parseQuoteWithText(
-          `Original HTML:\n${pastedContent}\n\nExtracted text:\n${text}`
+          `Original HTML:\n${pastedContent}\n\nExtracted text:\n${text}${linkedContent}`
         );
       } else {
         sourceType = "paste_text";
-        parsed = await parseQuoteWithText(pastedContent!);
+        const linkedContent = await followLinks(pastedContent!);
+        parsed = await parseQuoteWithText(pastedContent! + linkedContent);
       }
     }
 
