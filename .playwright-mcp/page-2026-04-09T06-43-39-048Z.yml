@@ -1,0 +1,35 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - img "Nowadays" [ref=e5]
+      - generic [ref=e6]: "|"
+      - generic [ref=e7]: Quote Parser
+  - main [ref=e8]:
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]: AI-Powered Extraction
+        - heading "Hotel Quote Parser" [level=2] [ref=e13]
+        - paragraph [ref=e14]: Paste an email or upload a document to instantly extract pricing details from hotel quotes.
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - tablist [ref=e18]:
+            - tab "Paste Content" [selected] [ref=e19]:
+              - img
+              - text: Paste Content
+            - tab "Upload File" [ref=e20]:
+              - img
+              - text: Upload File
+          - tabpanel "Paste Content" [ref=e21]:
+            - generic [ref=e22]:
+              - generic [ref=e23]: "Format:"
+              - generic [ref=e24]:
+                - button "HTML" [ref=e25]
+                - button "Plain Text" [ref=e26]
+            - textbox "Paste the hotel quote email HTML here..." [ref=e27]
+        - button "Parse Quote" [disabled]:
+          - img
+          - text: Parse Quote
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e33] [cursor=pointer]:
+    - img [ref=e34]
+  - alert [ref=e37]

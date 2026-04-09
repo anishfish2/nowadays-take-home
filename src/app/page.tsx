@@ -11,6 +11,7 @@ import type { ParsedQuote } from "@/types";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ParsedQuote | null>(null);
+  const [pageImages, setPageImages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const handleParse = async (data: {
@@ -21,6 +22,7 @@ export default function Home() {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setPageImages([]);
 
     try {
       const formData = new FormData();
@@ -44,6 +46,7 @@ export default function Home() {
       }
 
       setResult(json.quote);
+      setPageImages(json.pageImages || []);
       toast.success("Quote parsed successfully");
     } catch (err) {
       const message =
@@ -95,7 +98,7 @@ export default function Home() {
 
             {result && !isLoading && (
               <div className="bg-white rounded-3xl border border-border/50 shadow-sm p-6">
-                <QuoteResults quote={result} />
+                <QuoteResults quote={result} pageImages={pageImages} />
               </div>
             )}
           </div>

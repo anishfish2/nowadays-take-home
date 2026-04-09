@@ -34,6 +34,14 @@ const LineItemSchema = z.object({
   unit_rate: z.number().nullish().default(null),
   quantity: z.number().nullish().default(null),
   all_in_amount: z.number().nullish().default(null),
+  source_text: z.string().nullish().default(null),
+  source_page: z.number().nullish().default(null),
+});
+
+const TotalQualifierSchema = z.object({
+  qualifier: z.enum(["minimum", "estimated", "approximate", "tbd"]).nullish().default(null),
+  source_text: z.string().nullish().default(null),
+  source_page: z.number().nullish().default(null),
 });
 
 const WarningSchema = z.object({
@@ -87,6 +95,13 @@ const ParsedQuoteSchema = z.object({
   confidence_score: z.number().min(0).max(1).default(0.5),
   notes: z.string().nullish().default(null),
   line_items: z.array(LineItemSchema).default([]),
+  total_qualifiers: z.object({
+    total_quote: TotalQualifierSchema.optional(),
+    guestroom_total: TotalQualifierSchema.optional(),
+    meeting_room_total: TotalQualifierSchema.optional(),
+    food_beverage_total: TotalQualifierSchema.optional(),
+    other_total: TotalQualifierSchema.optional(),
+  }).default({}),
   // Enhanced fields — all have defaults for backward compatibility
   warnings: z.array(WarningSchema).default([]),
   contract_terms: ContractTermsSchema.nullish().default(null),

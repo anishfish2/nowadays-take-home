@@ -7,6 +7,14 @@ export interface LineItem {
   unit_rate?: number | null; // per-unit rate before ++
   quantity?: number | null; // number of units (rooms, nights, etc.)
   all_in_amount?: number | null; // estimated total including taxes/service charges if ++ was used
+  source_text?: string | null; // exact quote from source document
+  source_page?: number | null; // 1-indexed page number for PDFs
+}
+
+export interface TotalQualifier {
+  qualifier: "minimum" | "estimated" | "approximate" | "tbd" | null;
+  source_text?: string | null; // exact quote from source
+  source_page?: number | null;
 }
 
 export interface Warning {
@@ -17,8 +25,8 @@ export interface Warning {
 }
 
 export interface CancellationTier {
-  days_before_event: string; // e.g. "90+", "60-89", "30-59", "0-29"
-  penalty_percentage: number; // 0-100
+  days_before_event: string;
+  penalty_percentage: number;
   penalty_description: string | null;
 }
 
@@ -60,11 +68,27 @@ export interface ParsedQuote {
   confidence_score: number;
   notes: string | null;
   line_items: LineItem[];
+  // Qualifiers for totals (minimum, estimated, etc.)
+  total_qualifiers: {
+    total_quote?: TotalQualifier;
+    guestroom_total?: TotalQualifier;
+    meeting_room_total?: TotalQualifier;
+    food_beverage_total?: TotalQualifier;
+    other_total?: TotalQualifier;
+  };
   // Enhanced fields
   warnings: Warning[];
   contract_terms: ContractTerms | null;
   options: QuoteOption[];
   all_in_total: number | null;
+}
+
+// API response includes page images for source viewing
+export interface ParseResponse {
+  success: boolean;
+  quote: ParsedQuote;
+  savedId: string | null;
+  pageImages?: string[]; // base64 JPEG page images (for PDF sources)
 }
 
 export interface Quote extends ParsedQuote {

@@ -30,6 +30,7 @@ export async function POST(req: Request) {
     let sourceType: string;
     let rawInput: string;
     let originalFilename: string | null = null;
+    let returnPageImages: string[] = []; // base64 page images for source viewing
 
     if (file) {
       originalFilename = file.name;
@@ -46,6 +47,9 @@ export async function POST(req: Request) {
 
         // Detect scanned/image-only PDFs
         const isScannedPdf = textContent.replace(/\s/g, "").length < 50;
+
+        // Store page images for source viewing in the UI
+        returnPageImages = pageImages.map((img) => img.base64);
 
         if (pageImages.length > 0) {
           parsed = await parseQuoteWithVision(
@@ -142,6 +146,7 @@ export async function POST(req: Request) {
       success: true,
       quote: parsed,
       savedId,
+      pageImages: returnPageImages.length > 0 ? returnPageImages : undefined,
     });
   } catch (error) {
     console.error("Parse error:", error);
