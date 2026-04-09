@@ -61,15 +61,32 @@
 18. Tested all 3 samples successfully (HTML and PDF)
 19. Took screenshots of UI via Playwright
 
+20. Analyzed Sample 2 (Renaissance Chicago) — email has almost no data, just a Marriott portal link
+    - Simple HTTP fetch returns empty JS shell — the portal is a React/Angular SPA
+    - Realized we need a headless browser to render JS-heavy hotel portals
+21. Implemented LLM-guided link following:
+    - Sonnet identifies which URLs in the email likely contain quote data (filters out social media, maps, signatures)
+    - Playwright launches headless Chromium, navigates to the URL, waits for JS to render
+    - Extracts rendered page text, appends as additional context before main extraction
+    - Sample 2 went from all N/A (10% confidence) to full extraction: $84,975 guestrooms, $100,000 F&B, $185,000 total (85% confidence)
+22. Added link following to all input paths (HTML paste, text paste, HTML upload, PDF upload)
+23. Built quote history page with summary stats, full detail expansion, expand all, delete
+24. Source references — click any total or line item to see exact source text + PDF page image
+25. Smart N/A handling — never show N/A when data exists, use qualifier badges (min/est)
+26. Deployed to Vercel, cleaned up codebase, wrote README
+
 ### Current Status
 - [x] Project scaffolded and building
 - [x] Backend parsing engine complete (text + PDF Vision)
 - [x] Frontend UI complete
 - [x] Supabase table created and connected
 - [x] End-to-end testing with samples (all 3 pass)
-- [x] Basic UI polish
-- [ ] Deployment
-- [ ] Written response
+- [x] LLM-guided link following with Playwright
+- [x] Quote history page with full detail view
+- [x] Source references and smart qualifiers
+- [x] Enhanced analysis toggle (warnings, contract terms, all-in estimates)
+- [x] Deployed to Vercel
+- [x] Written response
 
 ---
 
