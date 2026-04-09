@@ -16,6 +16,7 @@ import {
   MapPin,
   Calendar,
   AlertTriangle,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -109,7 +110,8 @@ function StatCard({ label, value, icon: Icon, iconBg, delay }: StatCardProps) {
 export default function QuotesPage() {
   const [quotes, setQuotes] = useState<QuoteSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedQuote, setSelectedQuote] = useState<QuoteSummary | null>(null);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [allExpanded, setAllExpanded] = useState(false);
 
   useEffect(() => {
     fetch("/api/quotes")
@@ -131,6 +133,37 @@ export default function QuotesPage() {
     (sum, q) => sum + (q.warnings?.filter((w) => w.severity === "error" || w.severity === "warning").length || 0),
     0
   );
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleExpandAll = () => {
+    if (allExpanded) {
+      setExpandedIds(new Set());
+    } else {
+      setExpandedIds(new Set(quotes.map((q) => q.id)));
+    }
+    setAllExpanded(!allExpanded);
+  };
+
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const res = await fetch(`/api/quotes/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setQuotes((prev) => prev.filter((q) => q.id !== id));
+      setExpandedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  };
 
   return (
     <>
@@ -175,15 +208,25 @@ export default function QuotesPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
+                  {/* Expand all / Collapse all */}
+                  <div className="flex justify-end">
+                    <button
+                      onClick={toggleExpandAll}
+                      className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted/50"
+                    >
+                      {allExpanded ? "Collapse All" : "Expand All"}
+                    </button>
+                  </div>
+
                   {quotes.map((quote, i) => (
                     <Card
                       key={quote.id}
                       className={cn(
                         "border-border/50 shadow-sm hover:shadow-md transition-all cursor-pointer animate-in fade-in slide-in-from-bottom-2",
-                        selectedQuote?.id === quote.id && "ring-2 ring-primary/20"
+                        expandedIds.has(quote.id) && "ring-2 ring-primary/20"
                       )}
                       style={{ animationDelay: `${200 + i * 50}ms`, animationFillMode: "backwards" }}
-                      onClick={() => setSelectedQuote(selectedQuote?.id === quote.id ? null : quote)}
+                      onClick={() => toggleExpand(quote.id)}
                     >
                       <CardContent className="p-5">
                         <div className="flex items-start justify-between gap-4">
@@ -220,20 +263,29 @@ export default function QuotesPage() {
                               </span>
                             </div>
                           </div>
-                          <div className="text-right shrink-0">
-                            <p className="text-lg font-bold tabular-nums">
-                              {formatCurrency(quote.total_quote, quote.currency)}
-                            </p>
-                            {quote.original_filename && (
-                              <p className="text-xs text-muted-foreground truncate max-w-[150px]">
-                                {quote.original_filename}
+                          <div className="flex items-start gap-2 shrink-0">
+                            <div className="text-right">
+                              <p className="text-lg font-bold tabular-nums">
+                                {formatCurrency(quote.total_quote, quote.currency)}
                               </p>
-                            )}
+                              {quote.original_filename && (
+                                <p className="text-xs text-muted-foreground truncate max-w-[150px]">
+                                  {quote.original_filename}
+                                </p>
+                              )}
+                            </div>
+                            <button
+                              onClick={(e) => handleDelete(quote.id, e)}
+                              className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors group"
+                              title="Delete quote"
+                            >
+                              <X className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-red-500" />
+                            </button>
                           </div>
                         </div>
 
                         {/* Expanded detail */}
-                        {selectedQuote?.id === quote.id && (
+                        {expandedIds.has(quote.id) && (
                           <div className="mt-4 pt-4 border-t border-border/30 animate-in fade-in slide-in-from-top-2 duration-200">
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                               <div className="flex items-center gap-2 p-2 rounded-lg bg-blue-50/50">

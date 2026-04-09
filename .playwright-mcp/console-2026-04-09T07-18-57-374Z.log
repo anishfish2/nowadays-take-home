@@ -1,0 +1,109 @@
+[     134ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[     274ms] [LOG] [Fast Refresh] done in 240ms @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[     292ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[     299ms] [LOG] [HMR] connected @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  182136ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  182202ms] [LOG] [Fast Refresh] done in 11ms @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  182304ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  182476ms] [LOG] [Fast Refresh] done in 272ms @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  191756ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  191796ms] [LOG] [Fast Refresh] done in 19ms @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  192206ms] ReferenceError: selectedQuote is not defined
+    at eval (http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js?id=%255Bproject%255D%252Fsrc%252Fapp%252Fquotes%252Fpage.tsx+%255Bapp-client%255D+%2528ecmascript%2529:319:304)
+    at Array.map (<anonymous>)
+    at QuotesPage (http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js?id=%255Bproject%255D%252Fsrc%252Fapp%252Fquotes%252Fpage.tsx+%255Bapp-client%255D+%2528ecmascript%2529:318:54)
+    at Object.react_stack_bottom_frame (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:15037:24)
+    at renderWithHooks (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:4620:24)
+    at updateFunctionComponent (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6081:21)
+    at beginWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6691:24)
+    at runWithFiberInDEV (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at performUnitOfWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9555:97)
+    at workLoopSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9449:40)
+    at renderRootSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9433:13)
+    at performWorkOnRoot (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64)
+[  200604ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  200606ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  200687ms] [LOG] [Fast Refresh] done in 18ms @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  200712ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  200721ms] [LOG] [HMR] connected @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  200884ms] ReferenceError: selectedQuote is not defined
+    at http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js:663:304
+    at Array.map (<anonymous>)
+    at QuotesPage (http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js:662:54)
+    at Object.react_stack_bottom_frame (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:15037:24)
+    at renderWithHooks (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:4620:24)
+    at updateFunctionComponent (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6081:21)
+    at beginWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6691:24)
+    at runWithFiberInDEV (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at performUnitOfWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9555:97)
+    at workLoopSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9449:40)
+    at renderRootSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9433:13)
+    at performWorkOnRoot (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64)
+[  213797ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  213799ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  213826ms] [LOG] [Fast Refresh] done in 26ms @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  213852ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  213859ms] [LOG] [HMR] connected @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  213975ms] ReferenceError: selectedQuote is not defined
+    at http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js:824:57
+    at Array.map (<anonymous>)
+    at QuotesPage (http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js:679:48)
+    at Object.react_stack_bottom_frame (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:15037:24)
+    at renderWithHooks (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:4620:24)
+    at updateFunctionComponent (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6081:21)
+    at beginWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6691:24)
+    at runWithFiberInDEV (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at performUnitOfWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9555:97)
+    at workLoopSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9449:40)
+    at renderRootSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9433:13)
+    at performWorkOnRoot (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64)
+[  230542ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  230543ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  230568ms] [LOG] [Fast Refresh] done in 29ms @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  230592ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  230598ms] [LOG] [HMR] connected @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  230754ms] ReferenceError: X is not defined
+    at http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js:825:290
+    at Array.map (<anonymous>)
+    at QuotesPage (http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js:679:48)
+    at Object.react_stack_bottom_frame (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:15037:24)
+    at renderWithHooks (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:4620:24)
+    at updateFunctionComponent (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6081:21)
+    at beginWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6691:24)
+    at runWithFiberInDEV (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at performUnitOfWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9555:97)
+    at workLoopSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9449:40)
+    at renderRootSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9433:13)
+    at performWorkOnRoot (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64)
+[  235570ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  235572ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  235624ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  235632ms] [LOG] [HMR] connected @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  235751ms] ReferenceError: X is not defined
+    at http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js:825:290
+    at Array.map (<anonymous>)
+    at QuotesPage (http://localhost:3001/_next/static/chunks/src_0iu1h9b._.js:679:48)
+    at Object.react_stack_bottom_frame (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:15037:24)
+    at renderWithHooks (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:4620:24)
+    at updateFunctionComponent (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6081:21)
+    at beginWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6691:24)
+    at runWithFiberInDEV (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at performUnitOfWork (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9555:97)
+    at workLoopSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9449:40)
+    at renderRootSync (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9433:13)
+    at performWorkOnRoot (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3001/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64)
+[  243744ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  243752ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  243786ms] [LOG] [Fast Refresh] done in 38ms @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  243880ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  243887ms] [LOG] [HMR] connected @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
