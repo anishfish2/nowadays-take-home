@@ -52,14 +52,24 @@
     - `src/components/quote-results.tsx` — Totals grid, line items, confidence badges, notes
     - `src/app/page.tsx` — Main page composing all components
 
+12. Set up Supabase MCP and authenticated
+13. Created `quotes` table via migration with indexes and RLS policy
+14. Configured `.env.local` with Supabase anon key
+15. Verified end-to-end: parse → save to Supabase → confirmed in database
+16. Fixed PDF parsing: switched from pdf-parse (worker issues in Next.js) to poppler pdftotext
+17. Fixed Claude model ID and Zod schema leniency
+18. Tested all 3 samples successfully (HTML and PDF)
+19. Took screenshots of UI via Playwright
+
 ### Current Status
 - [x] Project scaffolded and building
 - [x] Backend parsing engine complete (text + PDF Vision)
 - [x] Frontend UI complete
-- [ ] Supabase table creation (need anon key)
-- [ ] End-to-end testing with samples
-- [ ] Polish and animations
+- [x] Supabase table created and connected
+- [x] End-to-end testing with samples (all 3 pass)
+- [x] Basic UI polish
 - [ ] Deployment
+- [ ] Written response
 
 ---
 
@@ -81,7 +91,7 @@
 - [x] Build email input UI (paste + upload)
 - [x] Implement parsing engine (Claude API + Vision)
 - [x] Build results display
-- [ ] Database integration (pending Supabase setup)
+- [x] Database integration (Supabase connected, quotes saving)
 
 ### Phase 4: Stretch Goals
 - [ ] Link following
