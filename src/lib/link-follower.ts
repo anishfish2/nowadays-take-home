@@ -4,7 +4,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const MODEL = process.env.CLAUDE_MODEL_FAST || "claude-haiku-4-5-20251001";
+const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-4-5";
 
 /**
  * Use a fast/cheap LLM call to identify which URLs in the content
