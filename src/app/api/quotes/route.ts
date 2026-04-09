@@ -11,9 +11,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("quotes")
-    .select(
-      "id, created_at, hotel_name, hotel_location, event_name, event_dates, total_quote, guestroom_total, meeting_room_total, food_beverage_total, other_total, all_in_total, confidence_score, currency, source_type, original_filename, warnings"
-    )
+    .select("*")
     .order("created_at", { ascending: false });
 
   if (error) {

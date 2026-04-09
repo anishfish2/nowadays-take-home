@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Header } from "@/components/header";
+import { QuoteResults } from "@/components/quote-results";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   DollarSign,
-  Bed,
-  UtensilsCrossed,
-  DoorOpen,
   FileText,
   ArrowLeft,
   TrendingUp,
@@ -20,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import type { ParsedQuote } from "@/types";
 
 interface QuoteSummary {
   id: string;
@@ -39,6 +38,12 @@ interface QuoteSummary {
   source_type: string;
   original_filename: string | null;
   warnings: Array<{ severity: string; code: string; message: string }>;
+  // Full parsed data from llm_raw_response
+  llm_raw_response: ParsedQuote | null;
+  notes: string | null;
+  line_items: Array<Record<string, unknown>>;
+  contract_terms: Record<string, unknown> | null;
+  options: Array<Record<string, unknown>>;
 }
 
 function formatCurrency(amount: number | null, currency: string = "USD"): string {
@@ -284,65 +289,35 @@ export default function QuotesPage() {
                           </div>
                         </div>
 
-                        {/* Expanded detail */}
+                        {/* Expanded detail — full QuoteResults */}
                         {expandedIds.has(quote.id) && (
                           <div className="mt-4 pt-4 border-t border-border/30 animate-in fade-in slide-in-from-top-2 duration-200">
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                              <div className="flex items-center gap-2 p-2 rounded-lg bg-blue-50/50">
-                                <Bed className="w-4 h-4 text-blue-600" />
-                                <div>
-                                  <p className="text-[10px] text-muted-foreground">Guestrooms</p>
-                                  <p className="text-sm font-semibold tabular-nums">
-                                    {formatCurrency(quote.guestroom_total, quote.currency)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 p-2 rounded-lg bg-violet-50/50">
-                                <DoorOpen className="w-4 h-4 text-violet-600" />
-                                <div>
-                                  <p className="text-[10px] text-muted-foreground">Meeting</p>
-                                  <p className="text-sm font-semibold tabular-nums">
-                                    {formatCurrency(quote.meeting_room_total, quote.currency)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 p-2 rounded-lg bg-orange-50/50">
-                                <UtensilsCrossed className="w-4 h-4 text-orange-600" />
-                                <div>
-                                  <p className="text-[10px] text-muted-foreground">F&B</p>
-                                  <p className="text-sm font-semibold tabular-nums">
-                                    {formatCurrency(quote.food_beverage_total, quote.currency)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50/50">
-                                <DollarSign className="w-4 h-4 text-slate-600" />
-                                <div>
-                                  <p className="text-[10px] text-muted-foreground">Other</p>
-                                  <p className="text-sm font-semibold tabular-nums">
-                                    {formatCurrency(quote.other_total, quote.currency)}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            {quote.warnings && quote.warnings.length > 0 && (
-                              <div className="mt-3 flex flex-wrap gap-1.5">
-                                {quote.warnings.map((w, j) => (
-                                  <Badge
-                                    key={j}
-                                    variant="outline"
-                                    className={cn(
-                                      "text-[10px]",
-                                      w.severity === "error" && "text-red-600 bg-red-50 border-red-200",
-                                      w.severity === "warning" && "text-amber-600 bg-amber-50 border-amber-200",
-                                      w.severity === "info" && "text-blue-600 bg-blue-50 border-blue-200"
-                                    )}
-                                  >
-                                    {w.code}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
+                            <QuoteResults
+                              quote={
+                                quote.llm_raw_response || {
+                                  hotel_name: quote.hotel_name,
+                                  hotel_location: quote.hotel_location,
+                                  event_name: quote.event_name,
+                                  event_dates: quote.event_dates,
+                                  contact_name: null,
+                                  contact_email: null,
+                                  currency: quote.currency,
+                                  total_quote: quote.total_quote,
+                                  guestroom_total: quote.guestroom_total,
+                                  meeting_room_total: quote.meeting_room_total,
+                                  food_beverage_total: quote.food_beverage_total,
+                                  other_total: quote.other_total,
+                                  confidence_score: quote.confidence_score,
+                                  notes: quote.notes,
+                                  line_items: (quote.line_items || []) as unknown as ParsedQuote["line_items"],
+                                  total_qualifiers: {},
+                                  warnings: (quote.warnings || []) as unknown as ParsedQuote["warnings"],
+                                  contract_terms: quote.contract_terms as unknown as ParsedQuote["contract_terms"],
+                                  options: (quote.options || []) as unknown as ParsedQuote["options"],
+                                  all_in_total: quote.all_in_total,
+                                }
+                              }
+                            />
                           </div>
                         )}
                       </CardContent>
