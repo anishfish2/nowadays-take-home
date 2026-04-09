@@ -291,7 +291,7 @@ export default function QuotesPage() {
 
                         {/* Expanded detail — full QuoteResults */}
                         {expandedIds.has(quote.id) && (
-                          <div className="mt-4 pt-4 border-t border-border/30 animate-in fade-in slide-in-from-top-2 duration-200">
+                          <div className="mt-4 pt-4 border-t border-border/30 animate-in fade-in slide-in-from-top-2 duration-200" onClick={(e) => e.stopPropagation()}>
                             <QuoteResults
                               quote={
                                 quote.llm_raw_response || {
