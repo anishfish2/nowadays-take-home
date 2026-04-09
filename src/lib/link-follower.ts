@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { chromium } from "playwright-core";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -7,11 +8,10 @@ const anthropic = new Anthropic({
 const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-4-5";
 
 /**
- * Use a fast/cheap LLM call to identify which URLs in the content
+ * Use an LLM call to identify which URLs in the content
  * likely contain hotel quote or proposal data worth fetching.
  */
 export async function identifyRelevantUrls(content: string): Promise<string[]> {
-  // Quick check: does the content even have URLs?
   const urlPattern = /https?:\/\/[^\s<>"')\]]+/g;
   const allUrls = [...new Set(content.match(urlPattern) || [])];
 
@@ -48,10 +48,33 @@ Return ONLY a JSON array of the relevant URLs (e.g., ["https://...", "https://..
 }
 
 /**
- * Fetch a URL and extract text content. Returns null on failure.
- * Has a short timeout to avoid blocking on slow/dead links.
+ * Fetch a URL using a headless browser (Playwright) to handle
+ * JS-rendered pages like Marriott's proposal portal.
+ * Falls back to simple fetch if Playwright fails.
  */
-export async function fetchUrlContent(url: string): Promise<{ url: string; content: string; type: string } | null> {
+export async function fetchUrlContent(
+  url: string
+): Promise<{ url: string; content: string; type: string } | null> {
+  // Try Playwright first for JS-rendered pages
+  try {
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage();
+
+    await page.goto(url, { waitUntil: "networkidle", timeout: 20000 });
+    // Wait a bit for any lazy-loaded content
+    await page.waitForTimeout(2000);
+
+    const text = await page.evaluate(() => document.body.innerText);
+    await browser.close();
+
+    if (text && text.trim().length > 100) {
+      return { url, content: text.substring(0, 50000), type: "html" };
+    }
+  } catch {
+    // Playwright failed — fall back to simple fetch
+  }
+
+  // Fallback: simple HTTP fetch
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
@@ -59,7 +82,8 @@ export async function fetchUrlContent(url: string): Promise<{ url: string; conte
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; HotelQuoteParser/1.0)",
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         Accept: "text/html,application/pdf,*/*",
       },
       redirect: "follow",
@@ -73,11 +97,9 @@ export async function fetchUrlContent(url: string): Promise<{ url: string; conte
 
     if (contentType.includes("text/html") || contentType.includes("text/plain")) {
       const text = await response.text();
-      // Limit to 50k chars to avoid overwhelming Claude
       return { url, content: text.substring(0, 50000), type: "html" };
     }
 
-    // Could handle PDF downloads here in the future
     return null;
   } catch {
     return null;
@@ -86,24 +108,29 @@ export async function fetchUrlContent(url: string): Promise<{ url: string; conte
 
 /**
  * Extract URLs from content, identify relevant ones via LLM,
- * fetch them, and return the additional context.
+ * fetch them with headless browser, and return the additional context.
  */
 export async function followLinks(content: string): Promise<string> {
   const relevantUrls = await identifyRelevantUrls(content);
 
   if (relevantUrls.length === 0) return "";
 
-  const results = await Promise.all(
-    relevantUrls.slice(0, 3).map((url) => fetchUrlContent(url))
-  );
-
-  const fetched = results.filter(Boolean) as { url: string; content: string; type: string }[];
+  // Fetch sequentially to avoid launching too many browsers
+  const fetched: { url: string; content: string; type: string }[] = [];
+  for (const url of relevantUrls.slice(0, 3)) {
+    const result = await fetchUrlContent(url);
+    if (result) fetched.push(result);
+  }
 
   if (fetched.length === 0) return "";
 
   const sections = fetched.map(
-    (r) => `\n--- FETCHED FROM: ${r.url} ---\n${r.content}\n--- END FETCHED CONTENT ---`
+    (r) =>
+      `\n--- FETCHED FROM: ${r.url} ---\n${r.content}\n--- END FETCHED CONTENT ---`
   );
 
-  return "\n\nADDITIONAL CONTENT FETCHED FROM LINKS IN THE EMAIL:\n" + sections.join("\n");
+  return (
+    "\n\nADDITIONAL CONTENT FETCHED FROM LINKS IN THE EMAIL:\n" +
+    sections.join("\n")
+  );
 }
