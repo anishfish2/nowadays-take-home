@@ -30,6 +30,45 @@ const LineItemSchema = z.object({
   description: z.string(),
   amount: z.number(),
   confidence: z.number().min(0).max(1).optional().default(0.5),
+  waived: z.boolean().optional().default(false),
+  unit_rate: z.number().nullish().default(null),
+  quantity: z.number().nullish().default(null),
+  all_in_amount: z.number().nullish().default(null),
+});
+
+const WarningSchema = z.object({
+  severity: z.enum(["error", "warning", "info"]),
+  code: z.string(),
+  message: z.string(),
+  details: z.string().nullish().default(null),
+});
+
+const CancellationTierSchema = z.object({
+  days_before_event: z.string(),
+  penalty_percentage: z.number().min(0).max(100),
+  penalty_description: z.string().nullish().default(null),
+});
+
+const ContractTermsSchema = z.object({
+  attrition_percentage: z.number().nullish().default(null),
+  attrition_penalty_description: z.string().nullish().default(null),
+  cancellation_tiers: z.array(CancellationTierSchema).default([]),
+  decision_deadline: z.string().nullish().default(null),
+  minimum_spend: z.number().nullish().default(null),
+  minimum_spend_description: z.string().nullish().default(null),
+  commission_percentage: z.number().nullish().default(null),
+  commission_description: z.string().nullish().default(null),
+});
+
+const QuoteOptionSchema = z.object({
+  option_name: z.string(),
+  total: z.number().nullish().default(null),
+  guestroom_total: z.number().nullish().default(null),
+  meeting_room_total: z.number().nullish().default(null),
+  food_beverage_total: z.number().nullish().default(null),
+  other_total: z.number().nullish().default(null),
+  line_items: z.array(LineItemSchema).default([]),
+  notes: z.string().nullish().default(null),
 });
 
 const ParsedQuoteSchema = z.object({
@@ -48,6 +87,11 @@ const ParsedQuoteSchema = z.object({
   confidence_score: z.number().min(0).max(1).default(0.5),
   notes: z.string().nullish().default(null),
   line_items: z.array(LineItemSchema).default([]),
+  // Enhanced fields — all have defaults for backward compatibility
+  warnings: z.array(WarningSchema).default([]),
+  contract_terms: ContractTermsSchema.nullish().default(null),
+  options: z.array(QuoteOptionSchema).default([]),
+  all_in_total: z.number().nullish().default(null),
 });
 
 /**
@@ -58,7 +102,7 @@ export async function parseQuoteWithText(
 ): Promise<ParsedQuote> {
   const response = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 4096,
+    max_tokens: 8096,
     system: QUOTE_EXTRACTION_SYSTEM_PROMPT,
     messages: [
       {
@@ -94,13 +138,17 @@ export async function parseQuoteWithVision(
     });
   }
 
-  // Add the text content as context alongside images
-  const prompt = `I've provided images of each page of a hotel quote PDF above. Here is also the extracted text from the same PDF for reference:
+  // Adjust prompt based on whether we have extracted text
+  const prompt = textContent.trim()
+    ? `I've provided images of each page of a hotel quote PDF above. Here is also the extracted text from the same PDF for reference:
 
 ---
 EXTRACTED TEXT:
 ${textContent}
 ---
+
+Parse this hotel quote and extract all financial data points. Return a JSON object matching the schema exactly.`
+    : `I've provided images of each page of a scanned hotel quote PDF above. There is no extractable text — rely entirely on the images for data extraction. This is likely a scanned document.
 
 Parse this hotel quote and extract all financial data points. Return a JSON object matching the schema exactly.`;
 
@@ -111,7 +159,7 @@ Parse this hotel quote and extract all financial data points. Return a JSON obje
 
   const response = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 4096,
+    max_tokens: 8096,
     system: QUOTE_EXTRACTION_SYSTEM_PROMPT,
     messages: [
       {
@@ -153,6 +201,15 @@ function extractJsonFromResponse(
   ]) {
     if (parsed[key] && typeof parsed[key] === "object") {
       parsed[key] = JSON.stringify(parsed[key]);
+    }
+  }
+
+  // Coerce nested object fields that should be strings
+  if (Array.isArray(parsed.warnings)) {
+    for (const w of parsed.warnings) {
+      if (w.details && typeof w.details === "object") {
+        w.details = JSON.stringify(w.details);
+      }
     }
   }
 

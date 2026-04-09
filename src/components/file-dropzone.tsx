@@ -30,6 +30,9 @@ export function FileDropzone({ file, onFileSelect, disabled }: FileDropzoneProps
       "application/vnd.ms-outlook": [".msg"],
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
         [".docx"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        [".xlsx"],
+      "application/vnd.ms-excel": [".xls"],
     },
     maxFiles: 1,
     maxSize: 20 * 1024 * 1024, // 20MB
@@ -97,7 +100,7 @@ export function FileDropzone({ file, onFileSelect, disabled }: FileDropzoneProps
             {isDragActive ? "Drop your file here" : "Drop a file or click to browse"}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            PDF, HTML, EML, MSG, DOCX up to 20MB
+            PDF, HTML, XLSX, EML, MSG, DOCX up to 20MB
           </p>
         </div>
       </div>

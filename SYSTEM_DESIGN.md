@@ -1,12 +1,12 @@
 # Hotel Quote Parser - System Design Document
 
 ## Overview
-A tool for event planners to parse hotel quote emails and extract key financial data points. Supports pasting email content (HTML/plain text) and file uploads (PDF, HTML, etc.).
+A tool for event planners to parse hotel quote emails and extract key financial data points. Supports pasting email content (HTML/plain text) and file uploads (PDF, HTML, XLSX, etc.). Provides raw parsed values by default with an optional enhanced analysis mode for warnings, contract terms, and all-in cost estimates.
 
 ---
 
 ## 1. Problem Statement
-Event planners receive hotel quotes via email in various formats (HTML emails, plain text, PDFs, etc.). These need to be parsed to extract pricing information quickly and accurately.
+Event planners receive hotel quotes via email in various formats (HTML emails, plain text, PDFs, spreadsheets, etc.). These need to be parsed to extract pricing information quickly and accurately.
 
 ### Required Data Points
 - **Total Quote** - Overall cost for the entire booking
@@ -17,11 +17,12 @@ Event planners receive hotel quotes via email in various formats (HTML emails, p
 ---
 
 ## 2. Tech Stack
-- **Frontend**: React + Tailwind CSS + shadcn/ui (Next.js 15 App Router)
+- **Frontend**: React + Tailwind CSS + shadcn/ui (Next.js 16 App Router)
 - **Database**: PostgreSQL on Supabase
 - **Parsing**: Claude API (LLM-based structured extraction with Vision for PDFs)
-- **File Processing**: pdf-parse + pdftoppm (poppler) + html-to-text
+- **File Processing**: poppler (pdftotext + pdftoppm) + html-to-text + SheetJS (xlsx)
 - **Deployment**: Vercel
+- **Repository**: https://github.com/anishfish2/nowadays-take-home
 
 ---
 
@@ -41,64 +42,91 @@ Browser → Next.js App Router → API Route (/api/parse) → File Processing �
 - Regex would require hundreds of fragile rules and fail on every new hotel format
 
 **PDF pipeline (always LLM-in-the-loop):**
-1. `pdf-parse` extracts embedded text
-2. `pdftoppm` (poppler) converts pages to images
+1. `pdftotext` (poppler) extracts embedded text
+2. `pdftoppm` (poppler) converts pages to JPEG images
 3. **Both** text AND images sent to Claude Vision in a single request
 4. Claude cross-references text for precision + images for layout/tables
+5. Scanned/image-only PDFs: if text extraction is minimal (<50 chars), falls back to vision-only mode
 
 **HTML/text pipeline:**
 1. `html-to-text` converts HTML to clean text (preserving table structure)
 2. Both raw HTML and extracted text sent to Claude for extraction
 
+**XLSX pipeline:**
+1. SheetJS reads workbook, converts each sheet to CSV format
+2. All sheets concatenated as text, sent to Claude for extraction
+
 ### 3.3 Data Model
-See `quotes` table in Supabase:
+**`quotes` table** in Supabase:
 - UUID primary key, timestamps
-- Input data: source_type, original_filename, raw_input
+- Input: source_type, original_filename, raw_input
 - Hotel metadata: hotel_name, hotel_location, event_name, event_dates, contact info
-- Financials stored as cents (integers): total_quote, guestroom_total, meeting_room_total, food_beverage_total, other_total
+- Financials (cents as integers): total_quote, guestroom_total, meeting_room_total, food_beverage_total, other_total, all_in_total
 - Meta: confidence_score (0-1), currency, notes, line_items (JSONB), llm_raw_response (JSONB)
+- Enhanced: warnings (JSONB), contract_terms (JSONB), options (JSONB)
 
 ### 3.4 API Design
-- `POST /api/parse` — Accepts FormData (file upload or pasted content), returns parsed quote
+- `POST /api/parse` — Accepts FormData (file upload or pasted content), returns parsed quote with all fields
 
 ### 3.5 UI/UX Design
 - Single-page app matching Nowadays brand aesthetic (clean, white space, lavender/purple accent)
 - Input section: Tabs for paste (HTML/text toggle) and file upload (drag-and-drop)
-- Results section: Grand total card, 4 category cards, expandable line items, parser notes
-- Loading state: "Analyzing quote..." with sparkle animation
+- Results: Two display modes controlled by a toggle:
+  - **Default (raw values)**: 4 required totals, hotel info, confidence, basic line items, notes
+  - **Enhanced analysis** (toggle on): All-in estimates, waived badges, contract terms, options, warnings/flags
 
 ---
 
-## 4. Features - Core
+## 4. Features
+
+### Core (Implemented)
 - [x] Paste email content (HTML or plain text)
-- [x] Upload files (PDF, HTML)
+- [x] Upload files (PDF, HTML, XLSX)
 - [x] LLM-based extraction with Claude API
 - [x] Claude Vision for PDF analysis (text + images)
+- [x] Scanned/image-only PDF support
 - [x] Confidence scoring
-- [x] Line-item breakdown
+- [x] Line-item breakdown with category icons
 - [x] Parser notes/caveats
 - [x] Save to Supabase
 
-## 5. Features - Stretch Goals (Future)
-- [ ] Link following (fetch URLs found in emails for additional context)
-- [ ] Playwright support for JS-rendered hotel proposal portals
-- [ ] Iterative multi-pass parsing
+### Enhanced Parsing (Iteration 2)
+- [x] ++ notation: Calculate all-in costs when taxes/service charges are additional
+- [x] Tiered/variable pricing as separate line items
+- [x] Complimentary/waived item detection (waived: true flag)
+- [x] Partial/TBD data handling
+- [x] Multi-language/currency support
+- [x] Multiple venue options (Option A/B/C)
+- [x] Contract terms extraction (attrition, cancellation, commission)
+- [x] Red flag detection (math errors, aggressive terms, missing commission, date issues)
+- [x] Enhanced analysis toggle (raw values by default)
+
+### Stretch Goals (Future)
+- [ ] Link following (fetch URLs found in emails)
+- [ ] Playwright support for JS-rendered hotel portals
 - [ ] Quote history dashboard
-- [ ] Side-by-side comparison with charts
+- [ ] Side-by-side comparison
 - [ ] CSV export
 - [ ] Batch processing
-- [ ] .eml, .msg, .docx file support
 
-## 6. Edge Cases & Error Handling
+## 5. Edge Cases Handled
 - Empty input → client-side validation
 - File too large (>20MB) → client + server validation
 - Unsupported file type → file type filter in dropzone
-- Claude API timeout → error toast with retry option
-- No financial data found → low confidence score + notes explaining
+- Claude API timeout → error toast with retry
+- No financial data → low confidence + notes
+- Scanned PDF (no text) → vision-only mode with SCANNED_PDF flag
 - Ambiguous data → lower confidence + detailed notes
-- Supabase unavailable → graceful degradation (still shows results)
+- Supabase unavailable → graceful degradation
+- ++ pricing → all-in estimate calculation
+- Waived items → $0 with waived flag (not omitted)
+- TBD items → null amount with TBD_ITEMS flag
+- Multiple options in one proposal → separate option extraction
+- Math errors in hotel quote → MATH_DISCREPANCY warning
+- Aggressive cancellation → warning flag
+- Missing commission → info flag
 
-## 7. Sample Analysis
-- **Sample 1** (Kimpton Monaco SLC): Structured table in email, rate $192/night, 240 rooms
-- **Sample 2** (Renaissance Chicago): Minimal email data, relies on PDF/proposal link
-- **Sample 3** (Westin Peachtree Atlanta): Rate $219++ in body, detailed 9MB PDF attachment
+## 6. Sample Analysis
+- **Sample 1** (Kimpton Monaco SLC): Structured table in email, rate $192/night, 240 rooms, meeting room waived with $20k F&B min, 20% attrition, cancellation tiers
+- **Sample 2** (Renaissance Chicago): Minimal email data, relies on PDF/proposal link — low confidence expected
+- **Sample 3** (Westin Peachtree Atlanta): Rate $219++ in body, 200 rooms, 9MB PDF with detailed proposal

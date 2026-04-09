@@ -3,6 +3,45 @@ export interface LineItem {
   description: string;
   amount: number; // dollars
   confidence: number; // 0-1
+  waived: boolean; // true if explicitly complimentary/waived
+  unit_rate?: number | null; // per-unit rate before ++
+  quantity?: number | null; // number of units (rooms, nights, etc.)
+  all_in_amount?: number | null; // estimated total including taxes/service charges if ++ was used
+}
+
+export interface Warning {
+  severity: "error" | "warning" | "info";
+  code: string;
+  message: string;
+  details?: string | null;
+}
+
+export interface CancellationTier {
+  days_before_event: string; // e.g. "90+", "60-89", "30-59", "0-29"
+  penalty_percentage: number; // 0-100
+  penalty_description: string | null;
+}
+
+export interface ContractTerms {
+  attrition_percentage: number | null;
+  attrition_penalty_description: string | null;
+  cancellation_tiers: CancellationTier[];
+  decision_deadline: string | null;
+  minimum_spend: number | null;
+  minimum_spend_description: string | null;
+  commission_percentage: number | null;
+  commission_description: string | null;
+}
+
+export interface QuoteOption {
+  option_name: string;
+  total: number | null;
+  guestroom_total: number | null;
+  meeting_room_total: number | null;
+  food_beverage_total: number | null;
+  other_total: number | null;
+  line_items: LineItem[];
+  notes: string | null;
 }
 
 export interface ParsedQuote {
@@ -21,6 +60,11 @@ export interface ParsedQuote {
   confidence_score: number;
   notes: string | null;
   line_items: LineItem[];
+  // Enhanced fields
+  warnings: Warning[];
+  contract_terms: ContractTerms | null;
+  options: QuoteOption[];
+  all_in_total: number | null;
 }
 
 export interface Quote extends ParsedQuote {
@@ -39,4 +83,5 @@ export type SourceType =
   | "upload_eml"
   | "upload_msg"
   | "upload_docx"
+  | "upload_xlsx"
   | "upload_other";

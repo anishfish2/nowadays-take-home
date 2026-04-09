@@ -1,4 +1,5 @@
 import { convert } from "html-to-text";
+import * as XLSX from "xlsx";
 import { execSync } from "child_process";
 import { writeFileSync, readFileSync, mkdirSync, rmSync } from "fs";
 import { join } from "path";
@@ -112,6 +113,25 @@ export async function pdfToImages(
 }
 
 /**
+ * Extract text from an Excel file (.xlsx/.xls) using SheetJS.
+ * Converts each sheet to CSV format for LLM parsing.
+ */
+export function extractTextFromXlsx(buffer: Buffer): string {
+  const workbook = XLSX.read(buffer, { type: "buffer" });
+  const sections: string[] = [];
+
+  for (const sheetName of workbook.SheetNames) {
+    const sheet = workbook.Sheets[sheetName];
+    const csv = XLSX.utils.sheet_to_csv(sheet, { blankrows: false });
+    if (csv.trim()) {
+      sections.push(`=== Sheet: ${sheetName} ===\n${csv}`);
+    }
+  }
+
+  return sections.join("\n\n");
+}
+
+/**
  * Determine source type from file extension.
  */
 export function getSourceTypeFromFilename(
@@ -127,6 +147,9 @@ export function getSourceTypeFromFilename(
       return "upload_msg";
     case "docx":
       return "upload_docx";
+    case "xlsx":
+    case "xls":
+      return "upload_xlsx";
     case "html":
     case "htm":
       return "upload_html";
