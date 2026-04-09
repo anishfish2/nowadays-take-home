@@ -49,16 +49,20 @@ export async function POST(req: Request) {
         // Detect scanned/image-only PDFs
         const isScannedPdf = textContent.replace(/\s/g, "").length < 50;
 
+        // Follow links found in PDF text
+        const linkedContent = isScannedPdf ? "" : await followLinks(textContent);
+        const combinedText = isScannedPdf ? "" : textContent + linkedContent;
+
         // Store page images for source viewing in the UI
         returnPageImages = pageImages.map((img) => img.base64);
 
         if (pageImages.length > 0) {
           parsed = await parseQuoteWithVision(
-            isScannedPdf ? "" : textContent,
+            combinedText,
             pageImages
           );
         } else if (!isScannedPdf) {
-          parsed = await parseQuoteWithText(textContent);
+          parsed = await parseQuoteWithText(combinedText);
         } else {
           throw new Error("PDF appears to be empty or corrupted — no text or images could be extracted");
         }
