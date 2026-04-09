@@ -10,16 +10,15 @@ export function Header() {
           <Image
             src="/nowadays-icon.svg"
             alt="Nowadays"
-            width={36}
-            height={36}
-            className="rounded-lg"
+            width={208}
+            height={57}
+            className="h-10 w-auto"
+            priority
           />
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight text-foreground">
-              Quote Parser
-            </h1>
-            <p className="text-xs text-muted-foreground -mt-0.5">by Nowadays</p>
-          </div>
+          <span className="text-border">|</span>
+          <span className="text-sm font-medium text-muted-foreground tracking-tight">
+            Quote Parser
+          </span>
         </div>
       </div>
     </header>
