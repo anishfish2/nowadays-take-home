@@ -1,5 +1,4 @@
 import { convert } from "html-to-text";
-import { PDFParse } from "pdf-parse";
 import { execSync } from "child_process";
 import { writeFileSync, readFileSync, mkdirSync, rmSync } from "fs";
 import { join } from "path";
@@ -25,14 +24,27 @@ export function htmlToText(html: string): string {
 }
 
 /**
- * Extract text from a PDF buffer using pdf-parse.
+ * Extract text from a PDF buffer using poppler's pdftotext.
  */
 export async function extractTextFromPdf(
   buffer: Buffer
 ): Promise<string> {
-  const parser = new PDFParse({ data: new Uint8Array(buffer) });
-  const result = await parser.getText();
-  return result.text;
+  const tempDir = join(tmpdir(), `quote-pdftext-${randomUUID()}`);
+  const pdfPath = join(tempDir, "input.pdf");
+  const txtPath = join(tempDir, "output.txt");
+
+  try {
+    mkdirSync(tempDir, { recursive: true });
+    writeFileSync(pdfPath, buffer);
+    execSync(`pdftotext -layout "${pdfPath}" "${txtPath}"`, { timeout: 30000 });
+    return readFileSync(txtPath, "utf-8");
+  } finally {
+    try {
+      rmSync(tempDir, { recursive: true, force: true });
+    } catch {
+      // Best effort cleanup
+    }
+  }
 }
 
 /**
@@ -41,7 +53,7 @@ export async function extractTextFromPdf(
  */
 export async function pdfToImages(
   buffer: Buffer,
-  maxPages: number = 20
+  maxPages: number = 10
 ): Promise<{ base64: string; mediaType: string }[]> {
   const tempDir = join(tmpdir(), `quote-pdf-${randomUUID()}`);
   const pdfPath = join(tempDir, "input.pdf");
@@ -50,21 +62,21 @@ export async function pdfToImages(
     mkdirSync(tempDir, { recursive: true });
     writeFileSync(pdfPath, buffer);
 
-    // Use pdftoppm to convert PDF pages to PNG images
+    // Use pdftoppm to convert PDF pages to JPEG images (smaller than PNG for large PDFs)
     execSync(
-      `pdftoppm -png -r 200 -l ${maxPages} "${pdfPath}" "${join(tempDir, "page")}"`,
-      { timeout: 30000 }
+      `pdftoppm -jpeg -jpegopt quality=80 -r 150 -l ${maxPages} "${pdfPath}" "${join(tempDir, "page")}"`,
+      { timeout: 60000 }
     );
 
     // Read all generated page images
     const images: { base64: string; mediaType: string }[] = [];
 
     for (let i = 1; i <= maxPages; i++) {
-      // pdftoppm names files like page-01.png, page-1.png depending on total pages
+      // pdftoppm names files like page-01.jpg, page-1.jpg depending on total pages
       const possibleNames = [
-        join(tempDir, `page-${i}.png`),
-        join(tempDir, `page-${String(i).padStart(2, "0")}.png`),
-        join(tempDir, `page-${String(i).padStart(3, "0")}.png`),
+        join(tempDir, `page-${i}.jpg`),
+        join(tempDir, `page-${String(i).padStart(2, "0")}.jpg`),
+        join(tempDir, `page-${String(i).padStart(3, "0")}.jpg`),
       ];
 
       let imageBuffer: Buffer | null = null;
@@ -80,7 +92,7 @@ export async function pdfToImages(
       if (imageBuffer) {
         images.push({
           base64: imageBuffer.toString("base64"),
-          mediaType: "image/png",
+          mediaType: "image/jpeg",
         });
       } else if (i > 1) {
         // No more pages

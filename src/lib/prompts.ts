@@ -34,7 +34,35 @@ export const QUOTE_EXTRACTION_SYSTEM_PROMPT = `You are an expert hotel quote par
 - Be precise with calculations. Show your work in the line item descriptions.`;
 
 export const QUOTE_EXTRACTION_USER_PROMPT = (content: string) =>
-  `Parse the following hotel quote content and extract all financial data points. Return a JSON object matching the schema exactly.
+  `Parse the following hotel quote content and extract all financial data points.
+
+Return ONLY a valid JSON object (no markdown, no explanation) with exactly this structure:
+{
+  "hotel_name": "string or null",
+  "hotel_location": "string or null",
+  "event_name": "string or null",
+  "event_dates": "string or null",
+  "contact_name": "string or null",
+  "contact_email": "string or null",
+  "currency": "USD",
+  "total_quote": number or null,
+  "guestroom_total": number or null,
+  "meeting_room_total": number or null,
+  "food_beverage_total": number or null,
+  "other_total": number or null,
+  "confidence_score": number between 0 and 1,
+  "notes": "string or null",
+  "line_items": [
+    {
+      "category": "guestroom" | "meeting_room" | "food_beverage" | "other",
+      "description": "string",
+      "amount": number,
+      "confidence": number between 0 and 1
+    }
+  ]
+}
+
+IMPORTANT: category must be exactly one of: "guestroom", "meeting_room", "food_beverage", "other"
 
 ---
 HOTEL QUOTE CONTENT:
