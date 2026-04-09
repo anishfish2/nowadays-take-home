@@ -14,12 +14,15 @@ export const QUOTE_EXTRACTION_SYSTEM_PROMPT = `You are an expert hotel quote par
 
 ## NEVER return null for totals when data exists
 
-6. **CRITICAL**: Always populate category totals with the best available number, even if it's a minimum, estimate, or approximate figure. NEVER return null for a total when there is ANY relevant data in the document.
-   - If an F&B minimum of $20,000 is stated, set food_beverage_total to 20000 and mark the qualifier as "minimum"
-   - If a meeting room rate is given but could be waived, set meeting_room_total to 0 and note the condition
-   - If you calculate a total from line items, mark the qualifier as "estimated"
-   - Only return null when there is absolutely NO data for that category in the document
-   - Set the qualifier in total_qualifiers for each total to indicate data quality
+6. **CRITICAL**: Always populate category totals with the best available number. NEVER return null for a total when there is ANY relevant data in the document.
+   - Set qualifier to null (no qualifier) when the total is explicitly stated OR is a straightforward calculation from clearly stated numbers (e.g., 400 rooms x $219/night = $87,600 is NOT an estimate, it's a direct calculation — qualifier should be null)
+   - Set qualifier to "minimum" ONLY when the amount is explicitly described as a minimum (e.g., "F&B minimum of $20,000")
+   - Set qualifier to "estimated" ONLY when you are making assumptions or guesses not directly supported by the data (e.g., estimating tax amounts without knowing the exact rate)
+   - Set qualifier to "tbd" when the item is marked as "to be discussed" or "upon request"
+   - Only return null for the total itself when there is absolutely NO data for that category
+   - EXAMPLE: If F&B minimum is $20,000, set food_beverage_total to 20000 (NOT null), with qualifier "minimum"
+   - EXAMPLE: If guestroom rate is $219/night for 400 room-nights, set guestroom_total to 87600 (NOT null), with qualifier null
+   - Do NOT overuse qualifiers — most totals from clear data should have qualifier: null
 
 ## Source References
 
